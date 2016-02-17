@@ -5,25 +5,36 @@ var React = require('react'),
 	var App = React.createClass({
 		getInitialState: function() {
 			return {
-				ingredients: []
-
+				ingredients: ["apple"],
+				data:{}
 			};
 		},
+//create params for an ajax request that gets read by server
+		getFood: function(){
+			var url = 'http://localhost:3000/food';
+			for (var i = 0; i < this.state.ingredients.length; i++) {
+				url = url + this.state.ingredients[i] + '%2C'
+			}
+			url = url + '&limitLicense=false&number=20&ranking=1'
+			$.get(url, function(data){
+				data = JSON.parse(data);
+				this.state.data = data;
+				console.log(this.state.data);
+			}.bind(this))
+		},
 
-		// componentDidMount: function(){
-		// 	console.log('hi');
-		// 	$.get('http://localhost:3000/food', function(data){
-		// 		console.log(JSON.parse(data).recipes[0]);
-		// 	})
-		// },
+		componentDidMount: function(){
+			this.getFood();
+		},
 
+//on enter press create new ingredient in dashboard and update state accordingly
 		newIngredient: function(e) {
 			if (e.charCode === 13){
 				e.preventDefault();
 				var currIngredients = this.state.ingredients;
 				currIngredients.push(e.target.value);
 				this.setState({ingredients:currIngredients});
-			console.log(this.state.ingredients);
+				this.getFood();
 			}
 		},
 
@@ -31,8 +42,8 @@ var React = require('react'),
 			return (
 				<div className="container">
 				<Header />
-				<PageNav ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
-				<Router.RouteHandler ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
+				<PageNav data = {this.state.data} ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
+				<Router.RouteHandler data = {this.state.data} ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
 				</div>
 			);
 		}
@@ -58,7 +69,7 @@ var PageNav = React.createClass({
 		// console.log(this.props.ingredients);
 		return (
 			<div className="nav">
-				<Router.Link to="home" ingredients ={this.props.ingredients}>Home</Router.Link>
+				<Router.Link to="home" data = {this.props.data} ingredients ={this.props.ingredients}>Home</Router.Link>
 				&nbsp; | &nbsp;
 				<Router.Link to="about">About</Router.Link>
 				&nbsp; | &nbsp;

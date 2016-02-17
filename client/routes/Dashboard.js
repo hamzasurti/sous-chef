@@ -11,9 +11,9 @@ var Dashboard = React.createClass({
     }
 		return (
       <div>
-      <form  >
+      <form className="form-group" >
         Whats new in your kitchen?<br/>
-          <input type="text"  name = "newIngredient" onKeyPress={this.props.updateIngredients}/>
+          <input type="text"  name = "newIngredient" onKeyPress={this.props.updateIngredients} className="form-control"/>
       </form>
       <ul>{ingredientsArr}</ul>
       </div>
