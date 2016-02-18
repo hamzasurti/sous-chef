@@ -1,7 +1,6 @@
 var React = require('react'),
 	Router = require('react-router');
 
-
 	var App = React.createClass({
 		getInitialState: function() {
 			return {
@@ -17,10 +16,23 @@ var React = require('react'),
 			}
 			url = url + '&limitLicense=false&number=20&ranking=1'
 			$.get(url, function(data){
+				console.log(url);
 				data = JSON.parse(data);
 				this.state.data = data;
 				console.log(this.state.data);
 			}.bind(this))
+		},
+
+		clickHandler: function(item,e){
+			var recipeId = item.dispatchMarker.substring(item.dispatchMarker.length - 6);
+			var url = 'http://localhost:3000/click?';
+			url = url +  "id" + "="+ recipeId + '/information'
+			$.get(url, function(data,error){
+				data = JSON.parse(data);
+				// console.log(data.sourceUrl);
+				var win = window.open(data.sourceUrl, "blank");
+				win.focus();
+			});
 		},
 
 		componentDidMount: function(){
@@ -42,8 +54,18 @@ var React = require('react'),
 			return (
 				<div className="container">
 				<Header />
-				<PageNav data = {this.state.data} ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
-				<Router.RouteHandler data = {this.state.data} ingredients ={this.state.ingredients} updateIngredients = {this.newIngredient}/>
+				<PageNav
+				data = {this.state.data}
+				ingredients ={this.state.ingredients}
+				updateIngredients = {this.newIngredient}
+				clicked = {this.clickHandler}
+				/>
+				<Router.RouteHandler
+				data = {this.state.data}
+				ingredients ={this.state.ingredients}
+				updateIngredients = {this.newIngredient}
+				clicked = {this.clickHandler}
+				/>
 				</div>
 			);
 		}
@@ -69,11 +91,15 @@ var PageNav = React.createClass({
 		// console.log(this.props.ingredients);
 		return (
 			<div className="nav">
-				<Router.Link to="home" data = {this.props.data} ingredients ={this.props.ingredients}>Home</Router.Link>
+			<Router.Link to="dashboard"
+			ingredients ={this.props.ingredients}
+			updateIngredients = {this.props.updateIngredients}>Dashboard</Router.Link>
 				&nbsp; | &nbsp;
-				<Router.Link to="about">About</Router.Link>
-				&nbsp; | &nbsp;
-				<Router.Link to="dashboard" ingredients ={this.props.ingredients} updateIngredients = {this.props.updateIngredients}>Dashboard</Router.Link>
+				<Router.Link to="recipes"
+				data = {this.props.data}
+				ingredients ={this.props.ingredients}
+				clicked = {this.props.clicked}
+				updateIngredients = {this.props.updateIngredients}>Recipes</Router.Link>
 			</div>
 		);
 	}
@@ -81,17 +107,17 @@ var PageNav = React.createClass({
 
 
 var routes = {
-	Home: require('../routes/Home'),
+	Recipes: require('../routes/Recipes'),
 	About: require('../routes/About'),
 	Dashboard: require('../routes/Dashboard')
 };
 
 var routes = (
 	<Router.Route name="app" path="/" handler={App}>
-		<Router.Route name="home" path="/" handler={routes.Home} />
+		<Router.Route name="recipes" path="/recipes" handler={routes.Recipes} />
 		<Router.Route name="about" path="/about" handler={routes.About}/>
-		<Router.Route name="dashboard" path="/dashboard" handler={routes.Dashboard}/>
-		<Router.DefaultRoute handler={routes.Home}/>
+		<Router.Route name="dashboard" path="/" handler={routes.Dashboard}/>
+		<Router.DefaultRoute handler={routes.Dashboard}/>
 	</Router.Route>
 );
 

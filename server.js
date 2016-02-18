@@ -16,7 +16,19 @@ app.get('/food:ingredients',function(req,res){
   request('https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/findByIngredients?ingredients=' + req.params.ingredients,{headers:{"X-Mashape-Key":"jsAK9c0nctmshgWHkQQjhKRgI9YRp1aNs15jsnhbqhyC1blLhl"}}, function (error, response, body) {
     if (error) console.log(error);
     else{
-      console.log(req.params);
+      // console.log(req.params);
+      res.send(body);
+    }
+  });
+});
+
+app.get('/click',function(req,res){
+  console.log('inside express get request');
+  var url = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/' + req.query.id;
+  request(url,{headers:{"X-Mashape-Key":"jsAK9c0nctmshgWHkQQjhKRgI9YRp1aNs15jsnhbqhyC1blLhl"}}, function (error, response, body) {
+    if (error) console.log(error);
+    else{
+      // console.log(req.query);
       res.send(body);
     }
   });
